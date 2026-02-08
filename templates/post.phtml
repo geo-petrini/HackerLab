@@ -1,0 +1,167 @@
+<!-- 
+  Filippo Finke
+  Pagina di un articolo
+-->
+<!DOCTYPE html>
+<html lang="it">
+
+<head>
+
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="author" content="Filippo Finke">
+
+  <!-- Stampa il titolo della pagina con il nome dell'articolo -->
+  <title>HackerLab - <?php echo $post["title"]; ?></title>
+
+  <link href="/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+  <link href="/css/global.css" rel="stylesheet">
+  <link href="/css/blog-post.css" rel="stylesheet">
+
+</head>
+
+<body>
+
+  <!-- Navigazione -->
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
+    <div class="container">
+      <a class="navbar-brand" href="/">HackerLab <small>di Filippo Finke</small></a>
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarResponsive">
+        <ul class="navbar-nav ml-auto">
+          <li class="nav-item">
+            <a class="nav-link" href="/">Home</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/profile">Profilo</a>
+          </li>
+          <!-- Se l'utente è amministratore mostra i collegamenti al pannello amministrativo -->
+          <?php if ($permission === "administrator"): ?>
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" id="dropDown" role="button" data-toggle="dropdown">
+              Pannello di amministrazione
+            </a>
+            <div class="dropdown-menu" aria-labelledby="dropDown">
+              <a class="dropdown-item" href="/admin/articles">Articoli</a>
+              <a class="dropdown-item" href="/admin/users">Utenti</a>
+            </div>
+          </li>
+          <?php endif; ?>
+          <li class="nav-item">
+            <a class="nav-link" href="/logout">Esci</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" onclick="if(confirm('Sicuro di voler eseguire un reset del database?')) { window.location.href= '/reset';}">Reset database</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Contenuto della pagina -->
+  <div class="container main-container">
+    <div class="row">
+      <div class="col-md-8">
+
+        <!-- Stampa il titolo dell'articolo -->
+        <h1 class="mt-4">
+          <button type="button" class="btn btn-secondary" onclick="history.go(-1);">Torna indietro</button>
+          <br>
+          <?php echo $post["title"]; ?>
+        </h1>
+
+        <!-- Stampa l'autore dell'articolo -->
+        <p class="lead">
+          di
+          <a href="/profile/<?php echo $post["user_id"]; ?>"><?php echo $post["full_name"] ?? "eliminato"; ?></a>
+        </p>
+        <hr>
+        <!-- Stampa la data di pubblicazione -->
+        <p>Pubblicato il <?php echo date("d.m.Y", strtotime($post["created_at"])); ?> alle <?php echo date("H:i", strtotime($post["created_at"])); ?></p>
+        <hr>
+        <!-- Se l'articolo ha un'immagine, stampa il collegamento ad essa -->
+        <?php if ($post["image"] != null): ?>
+        <div class="text-center">
+          <img style="max-width: 100%;" src="/image/?file_name=<?php echo $post["image"]; ?>">
+        </div>
+        <hr>
+        <?php endif; ?>
+
+        <!-- Contenuto dell'articolo -->
+        <p class="justify">
+          <?php echo $post["content"]; ?>
+        </p>
+
+        <hr>
+
+        <!-- Formulario per commentare -->
+        <div class="card my-4">
+          <h5 class="card-header">Lascia un commento</h5>
+          <div class="card-body">
+            <form method="POST">
+              <div class="form-group">
+                <textarea name="comment" maxlength="255" class="form-control" rows="2" required></textarea>
+              </div>
+              <!-- Se è presente un errore, mostralo all'utente -->
+              <?php if (isset($_SESSION["error"])): ?>
+                <div class="alert alert-danger" role="alert">
+                  <?php echo $_SESSION["error"]; ?>
+                  <?php unset($_SESSION["error"]); ?>
+                </div>
+              <?php endif; ?>
+              <button type="submit" class="btn btn-secondary">Invia</button>
+            </form>
+          </div>
+        </div>
+
+        <!-- Stampa dei commenti correlati con l'articolo -->
+        <?php foreach ($comments as $comment): ?>
+        <div class="media mb-4">
+          <img style="max-width: 50px;" class="d-flex mr-3 rounded-circle" src="/images/user.png">
+          <div class="media-body">
+            <!-- Stampa il commento con le relative informazioni -->
+            <h5 class="mt-0">
+              <a href="/profile/<?php echo $comment["user_id"] ?? "eliminato"; ?>"> <?php echo $comment["full_name"] ?? "eliminato"; ?></a>
+              <small><?php echo date("d.m.y", strtotime($comment["created_at"])); ?></small>
+            </h5>
+            <?php echo $comment["comment"]; ?>
+          </div>
+        </div>
+        <?php endforeach; ?>
+
+      </div>
+
+      <div class="col-md-4 col-sm-12">
+        <div class="card my-4">
+          <h5 class="card-header">Cerca</h5>
+          <div class="card-body">
+            <form method="GET" action="/">
+              <div class="input-group">
+                <input type="text" class="form-control" name="search" placeholder="Ricerca..." required>
+                <span class="input-group-btn">
+                  <button class="btn btn-secondary" type="submit">Cerca!</button>
+                </span>
+              </div>
+            </form>
+          </div>
+        </div>
+
+        <div class="card my-4">
+          <h5 class="card-header">Accesso eseguito</h5>
+          <div class="card-body">
+          <!-- Stampa il nome completo dell'utente loggato, se non presente stampa 'full_name' -->
+          Bevenuto <b><?php echo $_SESSION["user"]["full_name"] ?? "full_name"; ?></b>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <script src="/vendor/jquery/jquery.min.js"></script>
+  <script src="/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+
+</body>
+</html>

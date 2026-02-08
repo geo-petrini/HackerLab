@@ -1,0 +1,130 @@
+<!-- 
+  Filippo Finke
+  Pagina profilo
+-->
+<!DOCTYPE html>
+<html lang="it">
+
+<head>
+
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="author" content="Filippo Finke">
+
+  <!-- Stampa il titolo della pagina con il nome completo dell'utente -->
+  <title>HackerLab - <?php echo $user["full_name"]; ?></title>
+
+  <link href="/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+  <link href="/css/global.css" rel="stylesheet">
+  <link href="/css/blog-home.css" rel="stylesheet">
+
+</head>
+
+<body>
+
+  <!-- Navigazione -->
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
+    <div class="container">
+      <a class="navbar-brand" href="/">HackerLab <small>di Filippo Finke</small></a>
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarResponsive">
+        <ul class="navbar-nav ml-auto">
+          <li class="nav-item">
+            <a class="nav-link" href="/">Home</a>
+          </li>
+          <li class="nav-item active">
+            <a class="nav-link" href="/profile">Profilo</a>
+          </li>
+          <!-- Se l'utente è amministratore mostra i collegamenti al pannello amministrativo -->
+          <?php if ($permission === "administrator"): ?>
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" id="dropDown" role="button" data-toggle="dropdown">
+              Pannello di amministrazione
+            </a>
+            <div class="dropdown-menu" aria-labelledby="dropDown">
+              <a class="dropdown-item" href="/admin/articles">Articoli</a>
+              <a class="dropdown-item" href="/admin/users">Utenti</a>
+            </div>
+          </li>
+          <?php endif; ?>
+          <li class="nav-item">
+            <a class="nav-link" href="/logout">Esci</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" onclick="if(confirm('Sicuro di voler eseguire un reset del database?')) { window.location.href= '/reset';}">Reset database</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Contenuto della pagina -->
+  <div class="container main-container">
+    <div class="row">
+      <div class="col-md-8">
+        <h1 class="my-4">
+          <!-- Stampa il nome completo dell'utente che si sta visualizzando -->
+          Articoli di <?php echo $user["full_name"]; ?><br>
+          <!-- Se l'utente che sta guardando la pagina è amministratore mostra anche l'indirizzo email -->
+          <?php if ($permission === "administrator"): ?>
+            <small><?php echo $user["email"]; ?></small>
+          <?php endif; ?>
+        </h1>
+        <!-- Stampare una scritta in caso l'utente non abbia nessun articolo -->
+        <?php if (count($articles) == 0): ?>
+        <h4>Nessun articolo.</h4>
+        <?php endif; ?>
+        <!-- Stampa tutti gli articoli creati dall'utente -->
+        <?php foreach ($articles as $article): ?>
+        <div class="card mb-4">
+          <!-- Se l'articolo possiede un immagine, stampa il tag img -->
+          <?php if ($article["image"] != null): ?>
+          <img class="article-image" src="/image/?file_name=<?php echo $article["image"]; ?>">
+          <?php endif; ?>          
+          <!-- Stampa delle varie informazioni dell'articolo -->
+          <div class="card-body">
+            <h2 class="card-title"><?php echo $article["title"]; ?></h2>
+            <a href="/post/<?php echo $article["id"]; ?>" class="btn btn-primary">Vai all'articolo &rarr;</a>
+          </div>
+          <div class="card-footer text-muted">
+            Pubblicato il <?php echo date("d.m.Y", strtotime($article["created_at"])); ?> da
+            <a href="/profile/<?php echo $article["user_id"]; ?>"><?php echo $user["full_name"]; ?></a>
+          </div>
+        </div>
+        <?php endforeach; ?>
+      </div>
+
+      <div class="col-md-4 col-sm-12">
+        <div class="card my-4">
+          <h5 class="card-header">Cerca</h5>
+          <div class="card-body">
+            <form method="GET" action="/">
+              <div class="input-group">
+                <input type="text" class="form-control" name="search" placeholder="Ricerca..." required>
+                <span class="input-group-btn">
+                  <button class="btn btn-secondary" type="submit">Cerca!</button>
+                </span>
+              </div>
+            </form>
+          </div>
+        </div>
+
+        <div class="card my-4">
+          <h5 class="card-header">Accesso eseguito</h5>
+          <div class="card-body">
+            <!-- Stampa il nome completo dell'utente loggato, se non presente stampa 'full_name' -->
+            Bevenuto <b><?php echo $_SESSION["user"]["full_name"] ?? "full_name"; ?></b>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <script src="/vendor/jquery/jquery.min.js"></script>
+  <script src="/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+
+</body>
+</html>

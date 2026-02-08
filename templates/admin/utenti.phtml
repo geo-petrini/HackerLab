@@ -1,0 +1,124 @@
+<!-- 
+  Filippo Finke
+  Pagina di amministrazione utenti
+-->
+<!DOCTYPE html>
+<html lang="it">
+
+<head>
+
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="author" content="Filippo Finke">
+
+  <title>HackerLab - Admin - Utenti</title>
+
+  <link href="/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+  <link href="/css/global.css" rel="stylesheet">
+  <link href="/css/blog-home.css" rel="stylesheet">
+
+</head>
+
+<body>
+
+  <!-- Navigazione -->
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
+    <div class="container">
+      <a class="navbar-brand" href="/">HackerLab <small>di Filippo Finke</small></a>
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarResponsive">
+        <ul class="navbar-nav ml-auto">
+          <li class="nav-item">
+            <a class="nav-link" href="/">Home</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/profile">Profilo</a>
+          </li>
+          <li class="nav-item dropdown active">
+            <a class="nav-link dropdown-toggle" id="dropDown" role="button" data-toggle="dropdown">
+              Pannello di amministrazione
+            </a>
+            <div class="dropdown-menu" aria-labelledby="dropDown">
+              <a class="dropdown-item" href="/admin/articles">Articoli</a>
+              <a class="dropdown-item" href="/admin/users">Utenti</a>
+            </div>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/logout">Esci</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" onclick="if(confirm('Sicuro di voler eseguire un reset del database?')) { window.location.href= '/reset';}">Reset database</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Contenuto della pagina -->
+  <div class="container main-container">
+
+    <div class="row">
+      <div class="col-md-12">
+        <h1 class="my-4">Gestione utenti</h1>
+
+        <!-- Se è presente un errore, mostralo all'utente -->
+        <?php if (isset($_SESSION["error"])): ?>
+        <div class="alert alert-danger" role="alert">
+          <?php echo $_SESSION["error"]; ?>
+          <?php unset($_SESSION["error"]); ?>
+        </div>
+        <?php endif; ?>
+
+        <!-- Se è presente un messaggio di successo, mostralo all'utente -->
+        <?php if (isset($_SESSION["success"])): ?>
+        <div class="alert alert-success" role="alert">
+          <?php echo $_SESSION["success"]; ?>
+          <?php unset($_SESSION["success"]); ?>
+        </div>
+        <?php endif; ?>
+
+        <!-- Stampa tutti gli utenti registrati nel sistema con le relative informazioni -->
+        <?php foreach ($users as $user): ?>
+        <div class="card mb-4">
+          <div class="card-body">
+          
+            <h2 class="card-title">
+              <?php echo $user["full_name"];?>
+              <a href="/profile/<?php echo $user["id"]; ?>" class="btn btn-primary float-right">Pagina profilo &rarr;</a>
+            </h2>
+            <?php if(!$user["enabled"]): ?>
+              <p class="text-danger">Disabilitato</p>
+            <?php else: ?>
+              <p class="text-success">Abilitato</p>
+            <?php endif; ?>
+            <?php echo $user["email"]; ?>
+            <br>
+            <b><?php echo $user["permission"]; ?></b>
+            <a onclick="deleteUser(<?php echo $user["id"]; ?>);" class="btn btn-danger float-right text-white">Elimina</a>
+            <?php if($user["enabled"]): ?>
+              <a href="/users/disable/<?php echo $user["id"]; ?>" class="btn btn-warning float-right text-white" style="margin-right: 10px;">Disabilita</a>
+            <?php else: ?>
+              <a href="/users/enable/<?php echo $user["id"]; ?>" class="btn btn-warning float-right text-white" style="margin-right: 10px;">Abilita</a>
+            <?php endif; ?>  
+         </div>
+        </div>
+        <?php endforeach; ?>
+      </div>
+    </div>
+  </div>
+  <script src="/vendor/jquery/jquery.min.js"></script>
+  <script src="/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+  <script>
+  // Funzione per dare la conferma di elimina di un utente.
+  function deleteUser(id) {
+    var path = "/users/delete/" + id;
+    if(confirm("Sei sicuro di voler eliminare questo utente?")) {
+      window.location.href = path;
+    }
+  }
+  </script>
+
+</body>
+</html>

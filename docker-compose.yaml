@@ -1,0 +1,9 @@
+services:
+  app:
+    build: .
+    image: hackerlab:latest
+    container_name: hackerlab
+    ports:
+    - "10000:80"
+    environment:
+      - MYSQL_ROOT_PASSWORD=Password.123

@@ -1,0 +1,9 @@
+vendor/
+storage/
+node_modules/
+.git
+.DS_Store
+.gitignore
+Dockerfile*
+*.md
+*.log

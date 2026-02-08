@@ -1,0 +1,93 @@
+<!-- 
+  Filippo Finke
+  Pagina di registrazione
+-->
+<!DOCTYPE html>
+<html lang="it">
+
+<head>
+
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="author" content="Filippo Finke">
+
+  <title>HackerLab - Registrati</title>
+
+  <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+  <link href="/css/global.css" rel="stylesheet">
+  <link href="css/register.css" rel="stylesheet">
+
+</head>
+
+<body>
+
+  <!-- Navigazione -->
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
+    <div class="container">
+      <a class="navbar-brand" href="/">HackerLab <small>di Filippo Finke</small></a>
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarResponsive">
+        <ul class="navbar-nav ml-auto">
+          <li class="nav-item">
+            <a class="nav-link" href="/">Home</a>
+          </li>
+          <li class="nav-item active">
+            <a class="nav-link" href="/register">Registrati</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" onclick="if(confirm('Sicuro di voler eseguire un reset del database?')) { window.location.href= '/reset';}">Reset database</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Contenuto della pagina -->
+  <br>
+  <div class="container main-container">
+
+    <div class="row">
+      <div class="mx-auto card col-md-6">
+        <div class="card-body">
+          <h3>HackerLab - Registrati</h3>
+          <hr>
+          <form action="/register" method="post">
+            <div class="form-group">
+              <label for="full_name">Nome e cognome</label>
+              <input type="text" class="form-control" name="full_name" placeholder="Nome e cognome" pattern="^[a-zA-Z]*\s{0,1}[a-zA-Z]*$" required>
+              <small class="form-text text-muted">Verrà mostrato ad altri utenti.</small>
+            </div>
+            <div class="form-group">
+              <label for="email">Indirizzo email</label>
+              <input type="email" class="form-control" name="email" placeholder="Email" required>
+            </div>
+            <div class="form-group">
+              <label for="password">Password</label>
+              <input type="password" class="form-control" name="password" placeholder="Password" minlength="4" required>
+            </div>
+            <div class="form-group">
+              <label for="repeat_password">Ripeti la password</label>
+              <input type="password" class="form-control" name="repeat_password" placeholder="Ripeti la password" minlength="4" required>
+            </div>
+            <!-- Se è presente un errore, mostralo all'utente -->
+            <?php if (isset($_SESSION["error"])): ?>
+              <div class="alert alert-danger" role="alert">
+                <?php echo $_SESSION["error"]; ?>
+                <?php unset($_SESSION["error"]); ?>
+              </div>
+            <?php endif; ?>
+            <button type="submit" class="btn btn-primary">Crea un account</button>
+          </form>        
+        </div>
+      </div>
+    </div>
+  </div>
+  <br>
+
+  <script src="vendor/jquery/jquery.min.js"></script>
+  <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,132 @@
+<!-- 
+  Filippo Finke
+  Pagina di amministrazione articoli
+-->
+<!DOCTYPE html>
+<html lang="it">
+
+<head>
+
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="author" content="Filippo Finke">
+
+  <title>HackerLab - Admin - Articoli</title>
+
+  <link href="/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+  <link href="/css/global.css" rel="stylesheet">
+  <link href="/css/blog-home.css" rel="stylesheet">
+
+</head>
+
+<body>
+
+  <!-- Navigazione -->
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
+    <div class="container">
+      <a class="navbar-brand" href="/">HackerLab <small>di Filippo Finke</small></a>
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarResponsive">
+        <ul class="navbar-nav ml-auto">
+          <li class="nav-item">
+            <a class="nav-link" href="/">Home</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/profile">Profilo</a>
+          </li>
+          <li class="nav-item dropdown active">
+            <a class="nav-link dropdown-toggle" id="dropDown" role="button" data-toggle="dropdown">
+              Pannello di amministrazione
+            </a>
+            <div class="dropdown-menu" aria-labelledby="dropDown">
+              <a class="dropdown-item" href="/admin/articles">Articoli</a>
+              <a class="dropdown-item" href="/admin/users">Utenti</a>
+            </div>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/logout">Esci</a>
+          </li>
+          <li class="nav-item">
+           <a class="nav-link" onclick="if(confirm('Sicuro di voler eseguire un reset del database?')) { window.location.href= '/reset';}">Reset database</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Contenuto della pagina -->
+  <div class="container main-container">
+
+    <div class="row">
+      <div class="col-md-12">
+        <h1 class="my-4">Gestione articoli</h1>
+
+        <!-- Se è presente un errore, mostralo all'utente -->
+        <?php if(isset($_SESSION["error"])): ?>
+        <div class="alert alert-danger" role="alert">
+          <?php echo $_SESSION["error"]; ?>
+          <?php unset($_SESSION["error"]); ?>
+        </div>
+        <?php endif; ?>
+
+        <!-- Se è presente un messaggio di successo, mostralo all'utente -->
+        <?php if(isset($_SESSION["success"])): ?>
+        <div class="alert alert-success" role="alert">
+          <?php echo $_SESSION["success"]; ?>
+          <?php unset($_SESSION["success"]); ?>
+        </div>
+        <?php endif; ?>
+
+        <!-- Stampa gli articoli della pagina corrente. -->
+        <?php foreach($articles as $article): ?>
+        <div class="card mb-4">
+          <!-- Se l'articolo possiede un immagine, stampa il tag img -->
+          <?php if($article["image"] != null): ?>
+          <img class="article-image" src="/image/?file_name=<?php echo $article["image"]; ?>">
+          <?php endif; ?>
+          <!-- Stampa delle varie informazioni dell'articolo -->
+          <div class="card-body">
+            <h2 class="card-title"><?php echo $article["title"]; ?></h2>
+            <a href="/post/<?php echo $article["id"]; ?>" class="btn btn-primary">Vai all'articolo &rarr;</a>
+            <a onclick="deleteArticle(<?php echo $article["id"]; ?>);" class="btn btn-danger float-right text-white">Elimina</a>
+          </div>
+          <div class="card-footer text-muted">
+            Pubblicato il <?php echo date("d.m.Y", strtotime($article["created_at"])); ?> da
+            <a href="/profile/<?php echo $article["user_id"]; ?>"><?php echo $article["full_name"] ?? "eliminato"; ?></a>
+          </div>
+        </div>
+        <?php endforeach; ?>
+
+        <!-- Paginazione -->
+        <ul class="pagination justify-content-center mb-4">
+          <!-- Calcola le pagine precedenti e successive -->
+          <?php 
+          $oldpage = $page - 1;
+          if($oldpage < 0) $oldpage = 0;
+          ?>
+          <li class="page-item <?php if($page == 0) echo "disabled"; ?>">
+            <a class="page-link" href="/admin/articles/<?php echo $oldpage; ?>">&larr; Pagina precedente</a>
+          </li>
+          <li class="page-item <?php if($page == $maxPage) echo "disabled"; ?>">
+            <a class="page-link" href="/admin/articles/<?php echo ($page + 1); ?>">Prossima pagina &rarr;</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <script src="/vendor/jquery/jquery.min.js"></script>
+  <script src="/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+  <script>
+  // Funzione per dare la conferma di elimina di un articolo.
+  function deleteArticle(id) {
+    var path = "/articles/delete/" + id;
+    if(confirm("Sei sicuro di voler eliminare questo articolo?")) {
+      window.location.href = path;
+    }
+  }
+  </script>
+</body>
+</html>
